@@ -21,6 +21,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^app/', include('StartUp.urls')),
     url(r'^snip/', include('app.urls')),
+    url(r'^link/', include('app_hyperlink.urls')),
     url(r'^accounts/', include('registration.backends.default.urls')),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
     #url(r'^accounts/login/$', 'django.contrib.auth.views.login',{'templates': 'error.html'}),
