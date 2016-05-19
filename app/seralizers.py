@@ -1,7 +1,7 @@
 from rest_framework import serializers
-from app.models import Snippet, LANGUAGE_CHOICES, STYLE_CHOICES
+from app.models import Snip, LANGUAGE_CHOICES, STYLE_CHOICES
 
-
+'''
 class SnippetSerializer(serializers.Serializer):
     pk = serializers.IntegerField(read_only=True)
     title = serializers.CharField(required=False, allow_blank=True, max_length=100)
@@ -27,8 +27,10 @@ class SnippetSerializer(serializers.Serializer):
         instance.style = validated_data.get('style', instance.style)
         instance.save()
         return instance
+'''
 
-class SnippetSerializer2(serializers.ModelSerializer):
+class SnippetSerializer(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.username')
     class Meta:
-        model = Snippet
-        fields = ('id', 'title', 'code', 'linenos', 'language', 'style')
+        model = Snip
+        fields = ('id', 'title', 'code', 'linenos', 'language', 'style','owner')

@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework import viewsets
-from app.models import Snippet
+from app.models import Snip
 from app.seralizers import SnippetSerializer
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -10,11 +10,13 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import mixins
 from rest_framework import generics
+from app.permissions import IsOwnerOrReadOnly
+from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView
 
 # Create your views here.
 
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = Snippet.objects.all()
+    queryset = Snip.objects.all()
     serializer_class = SnippetSerializer
 
     '''
@@ -36,7 +38,7 @@ def snippet_list(request):
     List all code snippets, or create a new snippet.
     """
     if request.method == 'GET':
-        snippets = Snippet.objects.all()
+        snippets = Snip.objects.all()
         serializer = SnippetSerializer(snippets, many=True)
         return Response(serializer.data)
 
@@ -55,8 +57,8 @@ def snippet_detail(request, pk):
     Retrieve, update or delete a code snippet.
     """
     try:
-        snippet = Snippet.objects.get(pk=pk)
-    except Snippet.DoesNotExist:
+        snippet = Snip.objects.get(pk=pk)
+    except Snip.DoesNotExist:
         return HttpResponse(status=404)
 
     if request.method == 'GET':
@@ -81,7 +83,7 @@ class SnippetList(mixins.ListModelMixin,
                           mixins.CreateModelMixin,
                           generics.GenericAPIView):
 
-    queryset = Snippet.objects.all()
+    queryset = Snip.objects.all()
     serializer_class = SnippetSerializer
 
     def get(self, request, *args, **kwargs):
@@ -98,7 +100,7 @@ class SnippetDetail(mixins.RetrieveModelMixin,
                             generics.GenericAPIView):
 
 
-    queryset = Snippet.objects.all()
+    queryset = Snip.objects.all()
     serializer_class = SnippetSerializer
 
 
@@ -112,3 +114,19 @@ class SnippetDetail(mixins.RetrieveModelMixin,
 
 def delete(self, request, *args, **kwargs):
     return self.destroy(request, *args, **kwargs)
+
+#############################
+class SnipMixin(object):
+    queryset = Snip.objects.all()
+    serializer_class = SnippetSerializer
+    permission_classes = (IsOwnerOrReadOnly,)
+
+    def pre_save(self, obj):
+        obj.owner = self.request.user
+
+class SnipList(SnipMixin, ListCreateAPIView):
+    pass
+
+
+class SnipDetail(SnipMixin, RetrieveUpdateDestroyAPIView):
+    pass
