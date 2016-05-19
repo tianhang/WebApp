@@ -115,7 +115,7 @@ class SnippetDetail(mixins.RetrieveModelMixin,
 def delete(self, request, *args, **kwargs):
     return self.destroy(request, *args, **kwargs)
 
-#############################
+#############################2
 class SnipMixin(object):
     queryset = Snip.objects.all()
     serializer_class = SnippetSerializer
